@@ -151,7 +151,8 @@ public class UserData {
     public bool estado;
     public int score;
 }
+
 [System.Serializable]
-public class AllScores {
-    public UserData[] allScores;
+public class Alldata {
+    public UserData[] data;
 }

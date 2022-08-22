@@ -23,7 +23,7 @@ public class SetGetScore : MonoBehaviour
 
         resData.score = newScore;     
         string postData = JsonUtility.ToJson(resData);
-        Debug.Log("akakakjakjak    " + postData);
+        //Debug.Log("akakakjakjak    " + postData);
         string url = URL + "/api/usuarios";
         UnityWebRequest www = UnityWebRequest.Put(url, postData);
         www.method = "PATCH";
@@ -45,7 +45,7 @@ public class SetGetScore : MonoBehaviour
         }
     }
     IEnumerator GetScores(string Token) {
-        string url = URL + "/api/usuarios" + "?limit=5&sort=true";
+        string url = URL + "/api/usuarios" ;
         UnityWebRequest www = UnityWebRequest.Get(url);
         www.method = "GET";
         www.SetRequestHeader("content-type", "application/json");
@@ -57,8 +57,9 @@ public class SetGetScore : MonoBehaviour
             Debug.Log("NETWORK ERROR " + www.error);
         } else if (www.responseCode == 200) {
             //Debug.Log(www.downloadHandler.text);
-            Scores resData = JsonUtility.FromJson<Scores>(www.downloadHandler.text);
-            print(resData.scores);
+            //AllScores resData = JsonUtility.FromJson<AllScores>(www.downloadHandler.text);
+            Alldata resData = JsonUtility.FromJson<Alldata>(www.downloadHandler.text);
+            print(resData.data);
             //for (int i = 0; i < resData.allScores.Length; i++) {
             //    print("nombre: " + resData.allScores[i].username + " Puntaje: " + resData.allScores[i].score);
 
