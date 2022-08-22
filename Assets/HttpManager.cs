@@ -12,20 +12,20 @@ public class HttpManager : MonoBehaviour {
     
     static public string Token;
     public string Username;
-    
+   
     public static  UserData actualUser;
 
     // Start is called before the first frame update
     void Start() {
+       
         Token = PlayerPrefs.GetString("token");
         Username = PlayerPrefs.GetString("username");
+       
         Debug.Log("TOKEN:" + Token);
         StartCoroutine(GetPerfil());
     }
 
-    public void ClickGetScores() {
-        StartCoroutine(GetScores());
-    }
+   
    
 
     public void ClickSignUp() {
@@ -71,25 +71,7 @@ public class HttpManager : MonoBehaviour {
             Debug.Log(www.downloadHandler.text);
         }
     }
-    IEnumerator GetScores() {
-        string url = URL + "/leaders";
-        UnityWebRequest www = UnityWebRequest.Get(url);
-
-        yield return www.SendWebRequest();
-
-        if (www.isNetworkError) {
-            Debug.Log("NETWORK ERROR " + www.error);
-        } else if (www.responseCode == 200) {
-            //Debug.Log(www.downloadHandler.text);
-            Scores resData = JsonUtility.FromJson<Scores>(www.downloadHandler.text);
-
-            foreach (ScoreData score in resData.scores) {
-                Debug.Log(score.name + " | " + score.value);
-            }
-        } else {
-            Debug.Log(www.error);
-        }
-    }
+    
     IEnumerator GetPerfil() {
         
         string url = URL + "/api/usuarios/" + Username;
@@ -103,7 +85,7 @@ public class HttpManager : MonoBehaviour {
             AuthData resData = JsonUtility.FromJson<AuthData>(www.downloadHandler.text);
             actualUser = resData.usuario;
             Debug.Log("Token valido " + resData.usuario.username + ", id:" + resData.usuario._id + " y su score es: " + resData.usuario.score);
-           // SceneManager.LoadScene(1);
+           SceneManager.LoadScene(1);
         } else {
             Debug.Log(www.error);
             Debug.Log(www.downloadHandler.text);
@@ -128,8 +110,8 @@ public class HttpManager : MonoBehaviour {
             Debug.Log("TOKEN: " + resData.token);
             PlayerPrefs.SetString("token", resData.token);
             PlayerPrefs.SetString("username", resData.usuario.username);
-            PlayerPrefs.SetInt("score", resData.usuario.score);
-           // SceneManager.LoadScene("Game");
+            
+            SceneManager.LoadScene("Game");
         } else {
             Debug.Log(www.error);
             Debug.Log(www.downloadHandler.text);
@@ -168,4 +150,8 @@ public class UserData {
     public string username;
     public bool estado;
     public int score;
+}
+[System.Serializable]
+public class AllScores {
+    public UserData[] allScores;
 }
