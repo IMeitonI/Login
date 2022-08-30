@@ -84,6 +84,7 @@ public class HttpManager : MonoBehaviour {
             Debug.Log(www.downloadHandler.text);
             AuthData resData = JsonUtility.FromJson<AuthData>(www.downloadHandler.text);
             actualUser = resData.usuario;
+            
             Debug.Log("Token valido " + resData.usuario.username + ", id:" + resData.usuario._id + " y su score es: " + resData.usuario.score);
            SceneManager.LoadScene(1);
         } else {
@@ -143,6 +144,10 @@ public class AuthData {
     public string token;
     
 }
+[System.Serializable]
+public class Alldata {
+    public UserData[] usuarios;
+}
 
 [System.Serializable]
 public class UserData {
@@ -152,7 +157,3 @@ public class UserData {
     public int score;
 }
 
-[System.Serializable]
-public class Alldata {
-    public UserData[] data;
-}

@@ -3,18 +3,24 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Networking;
 using UnityEngine.UI;
+using UnityEngine.SceneManagement;
+
 
 public class SetGetScore : MonoBehaviour
 {
+   
+    [SerializeField] Text[] scores = new Text[5];
     [SerializeField]
     private string URL;
     [SerializeField] Text text ;
-    
+    public string Token;
+    string actualToken;
     int actualScore=0;
     private void Start() {
         text.text = "0";
-        
-        Debug.Log("Holaaa " + HttpManager.actualUser.score);
+        Token = PlayerPrefs.GetString("token");
+        actualToken = Token;
+        Debug.Log("Holaaa " + HttpManager.actualUser.score+ "Token: "+ Token);
     }
     
     public IEnumerator SetScores(string URL,int newScore, UserData resData, string Token) {
@@ -36,7 +42,7 @@ public class SetGetScore : MonoBehaviour
         } else if (www.responseCode == 200) {
             //Debug.Log(www.downloadHandler.text);
             AuthData resData2 = JsonUtility.FromJson<AuthData>(www.downloadHandler.text);
-
+            
             Debug.Log("Cambi'e el puntaje" + resData2.usuario.score);
            
         } else {
@@ -44,29 +50,25 @@ public class SetGetScore : MonoBehaviour
             Debug.Log(www.downloadHandler.text);
         }
     }
-    IEnumerator GetScores(string Token) {
-        string url = URL + "/api/usuarios" ;
+    IEnumerator GetScores( string Token) {
+        string url = URL + "/api/usuarios?limit=5&sort=true" ;
         UnityWebRequest www = UnityWebRequest.Get(url);
         www.method = "GET";
         www.SetRequestHeader("content-type", "application/json");
         www.SetRequestHeader("x-token", Token);
-
         yield return www.SendWebRequest();
 
         if (www.isNetworkError) {
             Debug.Log("NETWORK ERROR " + www.error);
         } else if (www.responseCode == 200) {
-            //Debug.Log(www.downloadHandler.text);
-            //AllScores resData = JsonUtility.FromJson<AllScores>(www.downloadHandler.text);
+           
             Alldata resData = JsonUtility.FromJson<Alldata>(www.downloadHandler.text);
-            print(resData.data);
-            //for (int i = 0; i < resData.allScores.Length; i++) {
-            //    print("nombre: " + resData.allScores[i].username + " Puntaje: " + resData.allScores[i].score);
+            
+            for (int i = 0; i < resData.usuarios.Length; i++) {
+                scores[i].text= resData.usuarios[i].username + " - " + resData.usuarios[i].score;
 
-            //}
-            //foreach (UserData score in resData.allScores) {
-            //    Debug.Log(score.username + " | " + score.score);
-            //}
+            }
+            
         } else {
             Debug.Log(www.error);
         }
@@ -80,12 +82,21 @@ public class SetGetScore : MonoBehaviour
 
     public void Stop() {
         if (actualScore > HttpManager.actualUser.score) {
-            StartCoroutine(SetScores(URL, actualScore, HttpManager.actualUser, HttpManager.Token));
+            StartCoroutine(SetScores(URL, actualScore, HttpManager.actualUser, Token));
         }
     }
 
     public void Puntajes() {
-        StartCoroutine(GetScores(HttpManager.Token));
+        Token = PlayerPrefs.GetString("token");
+        
+        
+        StartCoroutine(GetScores(Token));
+    }
+
+    public void Exit() {
+        PlayerPrefs.SetString("token", null);
+        PlayerPrefs.SetString("username", null);
+        SceneManager.LoadScene(0);
     }
     
 }
